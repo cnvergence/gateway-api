@@ -27,8 +27,8 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/utils/ptr"
 
+	gatewayv1 "sigs.k8s.io/gateway-api/apis/v1"
 	"sigs.k8s.io/gateway-api/apis/v1alpha2"
-	"sigs.k8s.io/gateway-api/apis/v1beta1"
 )
 
 // -----------------------------------------------------------------------------
@@ -93,7 +93,7 @@ func TestVerifyConditionsMatchGeneration(t *testing.T) {
 		},
 		{
 			name: "conditions where all match the generation pass verification",
-			obj:  &v1beta1.Gateway{ObjectMeta: metav1.ObjectMeta{Name: "fake-gateway", Generation: 20}},
+			obj:  &gatewayv1.Gateway{ObjectMeta: metav1.ObjectMeta{Name: "fake-gateway", Generation: 20}},
 			conditions: []metav1.Condition{
 				{Type: "FakeCondition1", ObservedGeneration: 20},
 				{Type: "FakeCondition2", ObservedGeneration: 20},
@@ -102,7 +102,7 @@ func TestVerifyConditionsMatchGeneration(t *testing.T) {
 		},
 		{
 			name: "conditions where one does not match the generation fail verification",
-			obj:  &v1beta1.Gateway{ObjectMeta: metav1.ObjectMeta{Name: "fake-gateway", Generation: 20}},
+			obj:  &gatewayv1.Gateway{ObjectMeta: metav1.ObjectMeta{Name: "fake-gateway", Generation: 20}},
 			conditions: []metav1.Condition{
 				{Type: "FakeCondition1", ObservedGeneration: 20},
 				{Type: "FakeCondition2", ObservedGeneration: 19},
@@ -112,7 +112,7 @@ func TestVerifyConditionsMatchGeneration(t *testing.T) {
 		},
 		{
 			name: "conditions where most do not match the generation fail verification",
-			obj:  &v1beta1.Gateway{ObjectMeta: metav1.ObjectMeta{Name: "fake-gateway", Generation: 20}},
+			obj:  &gatewayv1.Gateway{ObjectMeta: metav1.ObjectMeta{Name: "fake-gateway", Generation: 20}},
 			conditions: []metav1.Condition{
 				{Type: "FakeCondition1", ObservedGeneration: 18},
 				{Type: "FakeCondition2", ObservedGeneration: 18},
@@ -141,36 +141,36 @@ func TestVerifyConditionsMatchGeneration(t *testing.T) {
 func Test_listenersMatch(t *testing.T) {
 	tests := []struct {
 		name     string
-		expected []v1beta1.ListenerStatus
-		actual   []v1beta1.ListenerStatus
+		expected []gatewayv1.ListenerStatus
+		actual   []gatewayv1.ListenerStatus
 		want     bool
 	}{
 		{
 			name: "listeners do not match if a different number of actual and expected listeners are provided",
-			expected: []v1beta1.ListenerStatus{
+			expected: []gatewayv1.ListenerStatus{
 				{
-					SupportedKinds: []v1beta1.RouteGroupKind{
+					SupportedKinds: []gatewayv1.RouteGroupKind{
 						{
-							Group: (*v1beta1.Group)(&v1beta1.GroupVersion.Group),
-							Kind:  v1beta1.Kind("HTTPRoute"),
+							Group: (*gatewayv1.Group)(&gatewayv1.GroupVersion.Group),
+							Kind:  gatewayv1.Kind("HTTPRoute"),
 						},
 					},
 				},
 				{
-					SupportedKinds: []v1beta1.RouteGroupKind{
+					SupportedKinds: []gatewayv1.RouteGroupKind{
 						{
-							Group: (*v1beta1.Group)(&v1beta1.GroupVersion.Group),
-							Kind:  v1beta1.Kind("GRPCRoute"),
+							Group: (*gatewayv1.Group)(&gatewayv1.GroupVersion.Group),
+							Kind:  gatewayv1.Kind("GRPCRoute"),
 						},
 					},
 				},
 			},
-			actual: []v1beta1.ListenerStatus{
+			actual: []gatewayv1.ListenerStatus{
 				{
-					SupportedKinds: []v1beta1.RouteGroupKind{
+					SupportedKinds: []gatewayv1.RouteGroupKind{
 						{
-							Group: (*v1beta1.Group)(&v1beta1.GroupVersion.Group),
-							Kind:  v1beta1.Kind("HTTPRoute"),
+							Group: (*gatewayv1.Group)(&gatewayv1.GroupVersion.Group),
+							Kind:  gatewayv1.Kind("HTTPRoute"),
 						},
 					},
 				},
@@ -179,17 +179,17 @@ func Test_listenersMatch(t *testing.T) {
 		},
 		{
 			name: "SupportedKinds: expected empty and actual is non empty",
-			expected: []v1beta1.ListenerStatus{
+			expected: []gatewayv1.ListenerStatus{
 				{
-					SupportedKinds: []v1beta1.RouteGroupKind{},
+					SupportedKinds: []gatewayv1.RouteGroupKind{},
 				},
 			},
-			actual: []v1beta1.ListenerStatus{
+			actual: []gatewayv1.ListenerStatus{
 				{
-					SupportedKinds: []v1beta1.RouteGroupKind{
+					SupportedKinds: []gatewayv1.RouteGroupKind{
 						{
-							Group: (*v1beta1.Group)(&v1beta1.GroupVersion.Group),
-							Kind:  v1beta1.Kind("HTTPRoute"),
+							Group: (*gatewayv1.Group)(&gatewayv1.GroupVersion.Group),
+							Kind:  gatewayv1.Kind("HTTPRoute"),
 						},
 					},
 				},
@@ -198,22 +198,22 @@ func Test_listenersMatch(t *testing.T) {
 		},
 		{
 			name: "SupportedKinds: expected and actual are equal",
-			expected: []v1beta1.ListenerStatus{
+			expected: []gatewayv1.ListenerStatus{
 				{
-					SupportedKinds: []v1beta1.RouteGroupKind{
+					SupportedKinds: []gatewayv1.RouteGroupKind{
 						{
-							Group: (*v1beta1.Group)(&v1beta1.GroupVersion.Group),
-							Kind:  v1beta1.Kind("HTTPRoute"),
+							Group: (*gatewayv1.Group)(&gatewayv1.GroupVersion.Group),
+							Kind:  gatewayv1.Kind("HTTPRoute"),
 						},
 					},
 				},
 			},
-			actual: []v1beta1.ListenerStatus{
+			actual: []gatewayv1.ListenerStatus{
 				{
-					SupportedKinds: []v1beta1.RouteGroupKind{
+					SupportedKinds: []gatewayv1.RouteGroupKind{
 						{
-							Group: (*v1beta1.Group)(&v1beta1.GroupVersion.Group),
-							Kind:  v1beta1.Kind("HTTPRoute"),
+							Group: (*gatewayv1.Group)(&gatewayv1.GroupVersion.Group),
+							Kind:  gatewayv1.Kind("HTTPRoute"),
 						},
 					},
 				},
@@ -222,22 +222,22 @@ func Test_listenersMatch(t *testing.T) {
 		},
 		{
 			name: "SupportedKinds: expected and actual are equal values, Group pointers are different",
-			expected: []v1beta1.ListenerStatus{
+			expected: []gatewayv1.ListenerStatus{
 				{
-					SupportedKinds: []v1beta1.RouteGroupKind{
+					SupportedKinds: []gatewayv1.RouteGroupKind{
 						{
-							Group: (*v1beta1.Group)(&v1beta1.GroupVersion.Group),
-							Kind:  v1beta1.Kind("HTTPRoute"),
+							Group: (*gatewayv1.Group)(&gatewayv1.GroupVersion.Group),
+							Kind:  gatewayv1.Kind("HTTPRoute"),
 						},
 					},
 				},
 			},
-			actual: []v1beta1.ListenerStatus{
+			actual: []gatewayv1.ListenerStatus{
 				{
-					SupportedKinds: []v1beta1.RouteGroupKind{
+					SupportedKinds: []gatewayv1.RouteGroupKind{
 						{
-							Group: ptr.To[v1beta1.Group]("gateway.networking.k8s.io"),
-							Kind:  v1beta1.Kind("HTTPRoute"),
+							Group: ptr.To[gatewayv1.Group]("gateway.networking.k8s.io"),
+							Kind:  gatewayv1.Kind("HTTPRoute"),
 						},
 					},
 				},
@@ -246,22 +246,22 @@ func Test_listenersMatch(t *testing.T) {
 		},
 		{
 			name: "SupportedKinds: expected kind not found in actual",
-			expected: []v1beta1.ListenerStatus{
+			expected: []gatewayv1.ListenerStatus{
 				{
-					SupportedKinds: []v1beta1.RouteGroupKind{
+					SupportedKinds: []gatewayv1.RouteGroupKind{
 						{
-							Group: (*v1beta1.Group)(&v1beta1.GroupVersion.Group),
-							Kind:  v1beta1.Kind("HTTPRoute"),
+							Group: (*gatewayv1.Group)(&gatewayv1.GroupVersion.Group),
+							Kind:  gatewayv1.Kind("HTTPRoute"),
 						},
 					},
 				},
 			},
-			actual: []v1beta1.ListenerStatus{
+			actual: []gatewayv1.ListenerStatus{
 				{
-					SupportedKinds: []v1beta1.RouteGroupKind{
+					SupportedKinds: []gatewayv1.RouteGroupKind{
 						{
-							Group: (*v1beta1.Group)(&v1alpha2.GroupVersion.Group),
-							Kind:  v1beta1.Kind("GRPCRoute"),
+							Group: (*gatewayv1.Group)(&v1alpha2.GroupVersion.Group),
+							Kind:  gatewayv1.Kind("GRPCRoute"),
 						},
 					},
 				},
@@ -270,26 +270,26 @@ func Test_listenersMatch(t *testing.T) {
 		},
 		{
 			name: "SupportedKinds: expected is a subset of actual",
-			expected: []v1beta1.ListenerStatus{
+			expected: []gatewayv1.ListenerStatus{
 				{
-					SupportedKinds: []v1beta1.RouteGroupKind{
+					SupportedKinds: []gatewayv1.RouteGroupKind{
 						{
-							Group: (*v1beta1.Group)(&v1beta1.GroupVersion.Group),
-							Kind:  v1beta1.Kind("HTTPRoute"),
+							Group: (*gatewayv1.Group)(&gatewayv1.GroupVersion.Group),
+							Kind:  gatewayv1.Kind("HTTPRoute"),
 						},
 					},
 				},
 			},
-			actual: []v1beta1.ListenerStatus{
+			actual: []gatewayv1.ListenerStatus{
 				{
-					SupportedKinds: []v1beta1.RouteGroupKind{
+					SupportedKinds: []gatewayv1.RouteGroupKind{
 						{
-							Group: (*v1beta1.Group)(&v1alpha2.GroupVersion.Group),
-							Kind:  v1beta1.Kind("GRPCRoute"),
+							Group: (*gatewayv1.Group)(&v1alpha2.GroupVersion.Group),
+							Kind:  gatewayv1.Kind("GRPCRoute"),
 						},
 						{
-							Group: (*v1beta1.Group)(&v1beta1.GroupVersion.Group),
-							Kind:  v1beta1.Kind("HTTPRoute"),
+							Group: (*gatewayv1.Group)(&gatewayv1.GroupVersion.Group),
+							Kind:  gatewayv1.Kind("HTTPRoute"),
 						},
 					},
 				},
@@ -298,12 +298,12 @@ func Test_listenersMatch(t *testing.T) {
 		},
 		{
 			name: "expected and actual can be in different orders",
-			expected: []v1beta1.ListenerStatus{
+			expected: []gatewayv1.ListenerStatus{
 				{Name: "listener-2"},
 				{Name: "listener-3"},
 				{Name: "listener-1"},
 			},
-			actual: []v1beta1.ListenerStatus{
+			actual: []gatewayv1.ListenerStatus{
 				{Name: "listener-1"},
 				{Name: "listener-2"},
 				{Name: "listener-3"},
